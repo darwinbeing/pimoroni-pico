@@ -64,20 +64,15 @@ namespace pimoroni {
   }
 
   void LTP305::set_character(uint8_t x, uint16_t ch) {
-    uint8_t *data = nullptr;
     for(auto c : dotfont) {
       if(c.code == ch) {
-        data = &c.data[0];
-        break;
-      }
-    }
-
-    if(data) {
-      for(uint8_t cx = 0; cx < DOT_CHAR_WIDTH; cx++) {
-        for(uint8_t cy = 0; cy < HEIGHT; cy++) {
-          uint8_t c = data[cx] & (0b1 << cy);
-          set_pixel(x + cx, cy, c);
+        for(uint8_t cx = 0; cx < DOT_CHAR_WIDTH; cx++) {
+          for(uint8_t cy = 0; cy < HEIGHT; cy++) {
+            uint8_t d = c.data[cx] & (0b1 << cy);
+            set_pixel(x + cx, cy, d);
+          }
         }
+        break;
       }
     }
   }
@@ -122,7 +117,7 @@ namespace pimoroni {
   void LTP305::show() {
     i2c->write_blocking(address, buf_matrix_left, BUFFER_CMD + BUFFER_LENGTH, false);
     i2c->write_blocking(address, buf_matrix_right, BUFFER_CMD + BUFFER_LENGTH, false);
-    
+
     i2c->reg_write_uint8(address, CMD_MODE, MODE);
     i2c->reg_write_uint8(address, CMD_OPTIONS, OPTS);
     i2c->reg_write_uint8(address, CMD_BRIGHTNESS, brightness);
